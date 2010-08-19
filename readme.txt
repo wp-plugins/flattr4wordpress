@@ -33,7 +33,7 @@ dsc - This is the full excerpt of the content. Some blog text or information abo
 
 cat - This is the flattr category the content belongs to. You can choose between the following: text, images, video, audio, software, rest.
 
-lng - Language of the submitted thing. List of available languages È
+lng - Language of the submitted thing.
 
 tag - (Optional) This is the tags of the thing, to help people finding your content easier on the Flattr website. If you want to use multiple tags, separate using a normal comma (,) sign.
 
