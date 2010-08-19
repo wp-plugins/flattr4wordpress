@@ -4,7 +4,7 @@ Donate link: http://axiom7.com/
 Tags: pie, sharing
 Requires at least: 2.5.0
 Tested up to: 3.0.1
-Stable tag: 1.1
+Stable tag: 1.1.1
 
 This plugin implements a Flattr shortcode. It comes with its own options page under the Settings menu and has been translated into French.
 
