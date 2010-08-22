@@ -4,7 +4,7 @@ Donate link: http://axiom7.com/
 Tags: pie, sharing
 Requires at least: 2.5.0
 Tested up to: 3.0.1
-Stable tag: 1.1.4
+Stable tag: 1.2
 
 This plugin implements a Flattr shortcode. It comes with its own
 options page under the Settings menu and has been translated into
@@ -27,7 +27,7 @@ Or with all parameters specified:
 
 [flattr btn="compact|large" tle="<your title>" dsc="<your description"
 cat=<the category of your thing> lng="<the language of your thing>
-tag="<your tags>" url="<the URL of your thing>" hide="true|false"]
+tag="<your tags>" url="<the URL of your thing>" hdn="0|1"]
 
 To learn what each attribute entails, please refer to the following
 list:
@@ -59,15 +59,15 @@ the same on your site. Maybe you have multiple domains with the same
 content. This is to lock the content to always be recognized as the
 same content for Flattr.
 
-hide - (Optional) Use this to hide the thing from listings on
-flattr.com. The value 'true' will hide the thing.
+hdn - (Optional) Use this to hide the thing from listings on
+flattr.com. The value 1 will hide the thing.
 
 
 == Installation ==
 
-1. Upload Flattr4WordPress.zip to the "/wp-content/plugins/"
+1. Upload the Flattr4WordPress archive to the "/wp-content/plugins/"
 directory.
-1. Unzip Flattr4WordPress.zip.
+1. Unzip the Flattr4WordPress archive.
 1. Activate the plugin through the 'Plugins' menu in WordPress.
 1. Visit the Flattr4WordPress Settings page (under the Settings menu)
 and enter your Fattr User ID.
@@ -94,6 +94,10 @@ None at this time.
 
 
 == Changelog ==
+
+= 1.2 =
+
+* Updated to use the brand new 0.5.0 Flattr API
 
 = 1.1 =
 

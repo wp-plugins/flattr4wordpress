@@ -35,6 +35,17 @@ load_plugin_textdomain('axiom7_Flattr4WordPress',
 //}}}
 
 
+//{{{ Initialization
+function axiom7_Flattr4WordPress_Initialize() {
+
+    wp_enqueue_script('flattr',
+                      'http://api.flattr.com/js/0.5.0/load.js');
+}
+
+add_action('init', 'axiom7_Flattr4WordPress_Initialize');
+//}}}
+
+
 //{{{ Options Management
 function axiom7_Flattr4WordPress_OutputOptionsEditingPage() {
 
@@ -105,99 +116,65 @@ add_action('admin_menu',
 
 
 //{{{ Flattr Shortcode
-/*
-    Javascript API
+function axiom7_Flattr4WordPress_HandleFlattrShortcode($atts,
+                                                       $content = NULL,
+                                                       $code = '') {
 
-    If you e.g. host your own blog and can't find a plugin or extension for your system you can use the auto submit feature. Use the following code, you need to add a few parameters (bold = required). This will submit the "Things" to Flattr when people start to Flattr them.
+    // $atts    ::= array of attributes
+    // $content ::= text within enclosing form of shortcode element
+    // $code    ::= the shortcode found, when == callback name
+    // examples: [my-shortcode]
+    //           [my-shortcode/]
+    //           [my-shortcode foo='bar']
+    //           [my-shortcode foo='bar'/]
+    //           [my-shortcode]content[/my-shortcode]
+    //           [my-shortcode foo='bar']content[/my-shortcode]
 
-    <script type="text/javascript">
-        var flattr_btn = 'compact';
-        var flattr_uid = 'your user id';
-        var flattr_tle = 'the entry title';
-        var flattr_dsc = 'the entry description, please be as thorough as possible';
-        var flattr_cat = 'category';
-        var flattr_lng = 'language';
-        var flattr_tag = 'tag1, tag2, tag3';
-        var flattr_url = 'http://www.example.com';
-        var flattr_hide = 'true';
-    </script>
-    <script src="http://api.flattr.com/button/load.js" type="text/javascript"></script>
-    The parameters are:
+    if (is_feed()) {
 
-    flattr_btn - (Optional) This is the type of button you would like to display. To get the compact button use 'compact' otherwise the default (large) button is displayed. (When using the compact button its best to place this parameter first as the button then will be compact even if the later parameters messes up something.)
+        return '';
+    }
 
-    flattr_uid - This is your personal user id. Log in to see it if it's not shown above.
+    if (!($uid = get_option('axiom7_Flattr4WordPress_UserId'))) {
 
-    flattr_tle - This is the title of the thing you want to submit. This is typically the title of your blog entry or software name.
-
-    flattr_dsc - This is the full excerpt of the content. Some blog text or information about your song you've written or so forth.
-
-    flattr_cat - This is the flattr category the content belongs to. You can choose between the following: text, images, video, audio, software, rest.
-
-    flattr_lng - Language of the submitted thing. List of available languages »
-
-    flattr_tag - (Optional) This is the tags of the thing, to help people finding your content easier on the Flattr website. If you want to use multiple tags, separate using a normal comma (,) sign.
-
-    flattr_url - (Optional) This is the URL of the thing, if this is not always the same on your site. Maybe you have multiple domains with the same content. This is to lock the content to always be recognized as the same content for Flattr.
-
-    flattr_hide - (Optional) Use this to hide the thing from listings on flattr.com. The value 'true' will hide the thing.
-*/
-
-function handleFlattrShortcode($atts, $content = NULL, $code = '') {
-   // $atts    ::= array of attributes
-   // $content ::= text within enclosing form of shortcode element
-   // $code    ::= the shortcode found, when == callback name
-   // examples: [my-shortcode]
-   //           [my-shortcode/]
-   //           [my-shortcode foo='bar']
-   //           [my-shortcode foo='bar'/]
-   //           [my-shortcode]content[/my-shortcode]
-   //           [my-shortcode foo='bar']content[/my-shortcode]
-
-   if (is_feed()) {
-
-       return '';
-   }
-
-   if (!($uid = get_option('axiom7_Flattr4WordPress_UserId'))) {
-
-       return '<p>'
+        return '<p>'
                 . __('Flattr4WordPress: Flattr User ID is missing.', 'axiom7_Flattr4WordPress')
                 . '</p>';
-   }
+    }
 
-   extract(shortcode_atts(array(
-                                'btn'   => 'large',
-                                'tle'   => get_the_title(),
-                                'dsc'   => get_the_excerpt(),
-                                'cat'   => 'rest',
-                                'lng'   => get_locale(),
-                                'tag'   => 'axiom7',
-                                'url'   => get_permalink(),
-                                'hide'  => 'false'),
-                          $atts));
+    extract(shortcode_atts(array(
+                                 'btn'  => 'default',
+                                 'tle'  => get_the_title(),
+                                 'dsc'  => get_the_excerpt(),
+                                 'cat'  => 'rest',
+                                 'lng'  => get_locale(),
+                                 'tag'  => 'axiom7',
+                                 'url'  => get_permalink(),
+                                 'hdn'  => 0),
+                           $atts));
 
-   $flattrJavaScript = <<<END
-<script type="text/javascript">
-    var flattr_btn  = '{$btn}';
-    var flattr_uid  = '{$uid}';
-    var flattr_tle  = '{$tle}';
-    var flattr_dsc  = '{$dsc}';
-    var flattr_cat  = '{$cat}';
-    var flattr_lng  = '{$lng}';
-    var flattr_tag  = '{$tag}';
-    var flattr_url  = '{$url}';
-    var flattr_hide = '{$hide}';
-</script>
-<script src="http://api.flattr.com/button/load.js" type="text/javascript"></script>
-<br style="clear:right;margin-bottom:1em;margin-top:1em" />
+    $flattrButtonDefinition = <<<END
+<div style="margin-bottom:1em;margin-top:1em"><a class="FlattrButton" href="{$url}" rev="flattr;button:{$btn};category:{$cat};hidden:{$hdn};language:{$lng};tags:{$tag};uid:{$uid}" style="display:none" title="{$tle}" lang="{$lng}">{$dsc}</a></div>
 END;
 
-    return $flattrJavaScript;
+    return $flattrButtonDefinition;
 }
 
 add_shortcode('flattr',
-              'handleFlattrShortcode');
+              'axiom7_Flattr4WordPress_HandleFlattrShortcode');
+
+function axiom7_Flattr4WordPress_SetUpFlattr() {
+
+    echo <<<END
+<script type="text/javascript">
+/* <![CDATA[ */
+    FlattrLoader.setup();
+/* ]]> */
+</script>
+END;
+}
+
+add_action('wp_footer', 'axiom7_Flattr4WordPress_SetUpFlattr');
 //}}}
 
 ?>
